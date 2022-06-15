@@ -9,6 +9,7 @@ chrome.runtime.onMessage.addListener(function(request) {
         var regex_hxgncontent = /sitecore\/content\/hexagon\/hexagon-geosystems-brand\/hxgn-content-program\/home/;
         var regex_hxgnsmartnet = /sitecore\/content\/hexagon\/hexagon-geosystems-brand\/smartnet\/home/;
         var regex_idsgeoradar = /sitecore\/content\/hexagon\/hexagon-geosystems-brand\/ids-georadar\/home/;
+        var regex_OneWeb_master = /sitecore\/content\/One Web\/Master Site\/Home/;
 
         if (regex_leica.test(item_path) == true) {
             var beta_prev = item_path.replace("/sitecore/content/hexagon/hexagon-geosystems-brand/hexagon-geosystems/home","https://beta9.leica-geosystems.com");
@@ -24,7 +25,9 @@ chrome.runtime.onMessage.addListener(function(request) {
             var beta_prev = item_path.replace("/sitecore/content/hexagon/hexagon-geosystems-brand/smartnet/home","https://beta9.hxgnsmartnet.com");
         } else if (regex_idsgeoradar.test(item_path) == true) {
             var beta_prev = item_path.replace("/sitecore/content/hexagon/hexagon-geosystems-brand/ids-georadar/home","https://beta9.idsgeoradar.com");
-        } else {
+        } else if (regex_OneWeb_master.test(item_path) == true) {
+            var beta_prev = item_path.replace("/sitecore/content/One Web/Master Site/Home","https://www-stg.hexagon.com");
+        }  else {
             var beta_prev = item_path.innerHTML = "I dont know beta preview of this";
         }
 
