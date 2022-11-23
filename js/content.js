@@ -26,7 +26,7 @@ chrome.runtime.onMessage.addListener(function(request) {
         } else if (regex_idsgeoradar.test(item_path) == true) {
             var beta_prev = item_path.replace("/sitecore/content/hexagon/hexagon-geosystems-brand/ids-georadar/home","https://beta9.idsgeoradar.com");
         } else if (regex_OneWeb_master.test(item_path) == true) {
-            var beta_prev = item_path.replace("/sitecore/content/One Web/Master Site/Home","https://www-stg.hexagon.com");
+            var beta_prev = item_path.replace("/sitecore/content/One Web/Master Site/Home","https://www.hexagon.com");
         }  else {
             var beta_prev = item_path.innerHTML = "I dont know beta preview of this";
         }
