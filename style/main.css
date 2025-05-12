@@ -12,3 +12,85 @@ button.current {
               0 0 0 4px black;
 }
 */
+/* popup.css */
+html, body {
+    margin: 0;
+    padding: 0;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background for visibility */
+    border-radius: 10px; /* Adjust the radius for desired corner roundness */
+    overflow: hidden; /* Ensures content respects the rounded corners */
+    border: none !important; /* Remove any borders */
+    outline: none !important; /* Remove any outlines */
+}
+body {
+  min-width: 120px;
+}
+
+* {
+	margin: 0;
+	padding: 0px;
+	box-sizing: border-box;
+}
+
+.buttons {
+	display: flex;
+	flex-direction: column;
+  padding:5px;
+}
+
+.button {
+	appearance: none;
+	border: none;
+	outline: none;
+	background: none;
+	cursor: pointer;
+
+	font-size: 0.75rem;
+	font-weight: 300;
+	text-transform: uppercase;
+
+	padding: 1rem 1.5rem;
+	border-radius: 0.5rem;
+	background-color: rgb(218, 18, 26);
+	color: white;
+}
+
+#prev_button {
+	background-image: linear-gradient(to right, rgb(0, 102, 255) 50%, rgb(247, 212, 23) 50%);
+	background-size: 200%;
+	transition: 0.4s ease-out;
+  margin-bottom: 0.5rem;
+}
+
+#prev_button:hover {
+	background-position: right;
+}
+
+#live_button {
+	position: relative;
+	overflow: hidden;
+}
+
+#live_button span {
+	position: relative;
+	z-index: 2;
+}
+
+#live_button:after {
+	content: '';
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	z-index: 0;
+	width: 0;
+	height: 0;
+	background-color: rgb(252, 221, 9);
+	border-radius: 999px;
+	transition: 0.8s ease-out;
+}
+
+#live_button:hover:after {
+	width: 200%;
+	padding-top: 200%;
+}
