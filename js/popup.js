@@ -1,7 +1,10 @@
 function sendToActiveTab(action) {
     chrome.tabs.query({ active: true, currentWindow: true }, function(activeTabs) {
-        chrome.tabs.sendMessage(activeTabs[0].id, { action: action }, function() {
-            if (chrome.runtime.lastError) { /* no content script on this tab */ }
+        chrome.tabs.sendMessage(activeTabs[0].id, { action: action }, function(response) {
+            if (chrome.runtime.lastError) { return; }
+            if (response && response.url && response.url.startsWith('https://')) {
+                chrome.tabs.create({ url: response.url });
+            }
         });
     });
 }

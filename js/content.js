@@ -1,4 +1,4 @@
-chrome.runtime.onMessage.addListener(function(request) {
+chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     if(request.action === 'createPreviewLink') {
         // Creation of Beta preview link
         var item_path = document.querySelector(".scEditorPanel > table > tbody > tr > td > table > tbody > tr:nth-child(3) > td:nth-child(2) > input").value;
@@ -36,6 +36,7 @@ chrome.runtime.onMessage.addListener(function(request) {
             item_ID_row.insertAdjacentHTML('beforebegin', '<tr><td>Preview:</td><td><a href="'+prev_button+'" target="_blank">'+prev_button+'</a></td></tr>');
         };
         createLink();
+        sendResponse({ url: prev_button });
     }
 
     if(request.action === 'executeStagingLinkCode') {
@@ -75,6 +76,7 @@ chrome.runtime.onMessage.addListener(function(request) {
             item_ID_row.insertAdjacentHTML('beforebegin', '<tr><td>Staging: </td><td><a href="'+staging_button+'" target="_blank">'+staging_button+'</a></td></tr>');
         };
         createLink();
+        sendResponse({ url: staging_button });
     }
 
     if(request.action === 'executeLiveLinkCode') {
@@ -114,5 +116,6 @@ chrome.runtime.onMessage.addListener(function(request) {
             item_ID_row.insertAdjacentHTML('beforebegin', '<tr><td>Live: </td><td><a href="'+live_button+'" target="_blank">'+live_button+'</a></td></tr>');
         };
         createLink();
+        sendResponse({ url: live_button });
     }
 });
