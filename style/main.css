@@ -55,6 +55,38 @@ body {
 	color: white;
 }
 
+#staging_button {
+	background-image: linear-gradient(to right,
+		rgb(21, 54, 111) 50%,
+		rgb(135, 216, 247) 50%,
+		rgb(135, 216, 247) 66.67%,
+		rgb(255, 255, 255) 66.67%,
+		rgb(255, 255, 255) 83.33%,
+		rgb(135, 216, 247) 83.33%
+	);
+	background-size: 200%;
+	transition: 0.4s ease-out;
+	margin-bottom: 0.5rem;
+	color: white;
+	position: relative;
+	overflow: hidden;
+}
+
+#staging_button:hover {
+	background-position: right;
+	color: rgb(21, 54, 111);
+}
+
+#staging_button:hover::before {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	height: 6px;
+	background: rgb(215, 168, 25);
+}
+
 #prev_button {
 	background-image: linear-gradient(to right, rgb(0, 102, 255) 50%, rgb(247, 212, 23) 50%);
 	background-size: 200%;
