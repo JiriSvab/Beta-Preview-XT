@@ -1,5 +1,5 @@
 chrome.runtime.onMessage.addListener(function(request) {
-    if(request.action === 'executeCode') {
+    if(request.action === 'createPreviewLink') {
         // Creation of Beta preview link
         var item_path = document.querySelector(".scEditorPanel > table > tbody > tr > td > table > tbody > tr:nth-child(3) > td:nth-child(2) > input").value;
         var regex_leica = /sitecore\/content\/hexagon\/hexagon-geosystems-brand\/hexagon-geosystems/;
