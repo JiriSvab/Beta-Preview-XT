@@ -33,7 +33,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 
         function createLink() {
             var item_ID_row = document.querySelector(".scEditorPanel > table > tbody > tr > td > table > tbody > tr:nth-child(2) ");
-            item_ID_row.insertAdjacentHTML('beforebegin', '<tr><td>Preview:</td><td><a href="'+prev_button+'" target="_blank">'+prev_button+'</a></td></tr>');
+            item_ID_row.insertAdjacentHTML('beforebegin', '<tr><td>Preview:</td><td><a href="'+prev_button+'" target="_blank">'+prev_button+'</a> <button type="button" onclick="navigator.clipboard.writeText(\''+prev_button+'\');this.textContent=\'Copied!\';setTimeout(()=>this.textContent=\'Copy\',1500)" style="margin-left:8px;cursor:pointer;">Copy</button></td></tr>');
         };
         createLink();
         sendResponse({ url: prev_button });
@@ -73,7 +73,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 
         function createLink() {
             var item_ID_row = document.querySelector(".scEditorPanel > table > tbody > tr > td > table > tbody > tr:nth-child(2) ");
-            item_ID_row.insertAdjacentHTML('beforebegin', '<tr><td>Staging: </td><td><a href="'+staging_button+'" target="_blank">'+staging_button+'</a></td></tr>');
+            item_ID_row.insertAdjacentHTML('beforebegin', '<tr><td>Staging: </td><td><a href="'+staging_button+'" target="_blank">'+staging_button+'</a> <button type="button" onclick="navigator.clipboard.writeText(\''+staging_button+'\');this.textContent=\'Copied!\';setTimeout(()=>this.textContent=\'Copy\',1500)" style="margin-left:8px;cursor:pointer;">Copy</button></td></tr>');
         };
         createLink();
         sendResponse({ url: staging_button });
@@ -113,7 +113,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 
         function createLink() {
             var item_ID_row = document.querySelector(".scEditorPanel > table > tbody > tr > td > table > tbody > tr:nth-child(2) ");
-            item_ID_row.insertAdjacentHTML('beforebegin', '<tr><td>Live: </td><td><a href="'+live_button+'" target="_blank">'+live_button+'</a></td></tr>');
+            item_ID_row.insertAdjacentHTML('beforebegin', '<tr><td>Live: </td><td><a href="'+live_button+'" target="_blank">'+live_button+'</a> <button type="button" onclick="navigator.clipboard.writeText(\''+live_button+'\');this.textContent=\'Copied!\';setTimeout(()=>this.textContent=\'Copy\',1500)" style="margin-left:8px;cursor:pointer;">Copy</button></td></tr>');
         };
         createLink();
         sendResponse({ url: live_button });
