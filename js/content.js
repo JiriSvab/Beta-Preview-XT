@@ -1,3 +1,30 @@
+var languageMapCache = null;
+
+function loadLanguageMap() {
+    if (languageMapCache) {
+        return Promise.resolve(languageMapCache);
+    }
+    return fetch(chrome.runtime.getURL('js/languages.json'))
+        .then(function(response) { return response.json(); })
+        .then(function(data) { languageMapCache = data; return data; })
+        .catch(function() { return {}; });
+}
+
+function getLanguageLocale(languageMap) {
+    var langEl = document.querySelector('.scEditorHeaderVersionsLanguage');
+    if (!langEl) return '';
+    var title = langEl.getAttribute('title') || '';
+    var languageName = title.split(':')[0].trim();
+    return languageMap[languageName] || '';
+}
+
+function insertLocale(url, locale) {
+    if (!locale || typeof url !== 'string') return url;
+    return url.replace(/^(https?:\/\/[^\/]+)(\/.*)?$/, function(match, domain, path) {
+        return domain + '/' + locale + (path || '');
+    });
+}
+
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     if(request.action === 'createPreviewLink') {
         // Creation of Beta preview link
@@ -31,12 +58,17 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
             var prev_button = item_path.innerHTML = "I dont know preview of this";
         }
 
-        function createLink() {
-            var item_ID_row = document.querySelector(".scEditorPanel > table > tbody > tr > td > table > tbody > tr:nth-child(2) ");
-            item_ID_row.insertAdjacentHTML('beforebegin', '<tr><td>Preview:</td><td><a href="'+prev_button+'" target="_blank">'+prev_button+'</a> <button type="button" onclick="navigator.clipboard.writeText(\''+prev_button+'\');this.textContent=\'Copied!\';setTimeout(()=>this.textContent=\'Copy\',1500)" style="margin-left:8px;cursor:pointer;">Copy</button></td></tr>');
-        };
-        createLink();
-        sendResponse({ url: prev_button });
+        loadLanguageMap().then(function(languageMap) {
+            prev_button = insertLocale(prev_button, getLanguageLocale(languageMap));
+
+            function createLink() {
+                var item_ID_row = document.querySelector(".scEditorPanel > table > tbody > tr > td > table > tbody > tr:nth-child(2) ");
+                item_ID_row.insertAdjacentHTML('beforebegin', '<tr><td>Preview:</td><td><a href="'+prev_button+'" target="_blank">'+prev_button+'</a> <button type="button" onclick="navigator.clipboard.writeText(\''+prev_button+'\');this.textContent=\'Copied!\';setTimeout(()=>this.textContent=\'Copy\',1500)" style="margin-left:8px;cursor:pointer;">Copy</button></td></tr>');
+            };
+            createLink();
+            sendResponse({ url: prev_button });
+        });
+        return true;
     }
 
     if(request.action === 'executeStagingLinkCode') {
@@ -71,12 +103,17 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
             var staging_button = item_path.innerHTML = "I dont know Staging link of this";
         }
 
-        function createLink() {
-            var item_ID_row = document.querySelector(".scEditorPanel > table > tbody > tr > td > table > tbody > tr:nth-child(2) ");
-            item_ID_row.insertAdjacentHTML('beforebegin', '<tr><td>Staging: </td><td><a href="'+staging_button+'" target="_blank">'+staging_button+'</a> <button type="button" onclick="navigator.clipboard.writeText(\''+staging_button+'\');this.textContent=\'Copied!\';setTimeout(()=>this.textContent=\'Copy\',1500)" style="margin-left:8px;cursor:pointer;">Copy</button></td></tr>');
-        };
-        createLink();
-        sendResponse({ url: staging_button });
+        loadLanguageMap().then(function(languageMap) {
+            staging_button = insertLocale(staging_button, getLanguageLocale(languageMap));
+
+            function createLink() {
+                var item_ID_row = document.querySelector(".scEditorPanel > table > tbody > tr > td > table > tbody > tr:nth-child(2) ");
+                item_ID_row.insertAdjacentHTML('beforebegin', '<tr><td>Staging: </td><td><a href="'+staging_button+'" target="_blank">'+staging_button+'</a> <button type="button" onclick="navigator.clipboard.writeText(\''+staging_button+'\');this.textContent=\'Copied!\';setTimeout(()=>this.textContent=\'Copy\',1500)" style="margin-left:8px;cursor:pointer;">Copy</button></td></tr>');
+            };
+            createLink();
+            sendResponse({ url: staging_button });
+        });
+        return true;
     }
 
     if(request.action === 'executeLiveLinkCode') {
@@ -111,11 +148,16 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
             var live_button = item_path.innerHTML = "I dont know Live link of this";
         }
 
-        function createLink() {
-            var item_ID_row = document.querySelector(".scEditorPanel > table > tbody > tr > td > table > tbody > tr:nth-child(2) ");
-            item_ID_row.insertAdjacentHTML('beforebegin', '<tr><td>Live: </td><td><a href="'+live_button+'" target="_blank">'+live_button+'</a> <button type="button" onclick="navigator.clipboard.writeText(\''+live_button+'\');this.textContent=\'Copied!\';setTimeout(()=>this.textContent=\'Copy\',1500)" style="margin-left:8px;cursor:pointer;">Copy</button></td></tr>');
-        };
-        createLink();
-        sendResponse({ url: live_button });
+        loadLanguageMap().then(function(languageMap) {
+            live_button = insertLocale(live_button, getLanguageLocale(languageMap));
+
+            function createLink() {
+                var item_ID_row = document.querySelector(".scEditorPanel > table > tbody > tr > td > table > tbody > tr:nth-child(2) ");
+                item_ID_row.insertAdjacentHTML('beforebegin', '<tr><td>Live: </td><td><a href="'+live_button+'" target="_blank">'+live_button+'</a> <button type="button" onclick="navigator.clipboard.writeText(\''+live_button+'\');this.textContent=\'Copied!\';setTimeout(()=>this.textContent=\'Copy\',1500)" style="margin-left:8px;cursor:pointer;">Copy</button></td></tr>');
+            };
+            createLink();
+            sendResponse({ url: live_button });
+        });
+        return true;
     }
 });
