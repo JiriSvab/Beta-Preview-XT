@@ -23,7 +23,7 @@ html, body {
     outline: none !important; /* Remove any outlines */
 }
 body {
-  min-width: 120px;
+  min-width: 360px;
 }
 
 * {
@@ -34,7 +34,7 @@ body {
 
 .buttons {
 	display: flex;
-	flex-direction: column;
+	flex-direction: row;
   padding:5px;
 }
 
@@ -66,7 +66,7 @@ body {
 	);
 	background-size: 200%;
 	transition: 0.4s ease-out;
-	margin-bottom: 0.5rem;
+	margin-right: 0.5rem;
 	color: white;
 	position: relative;
 	overflow: hidden;
@@ -91,7 +91,7 @@ body {
 	background-image: linear-gradient(to right, rgb(0, 102, 255) 50%, rgb(247, 212, 23) 50%);
 	background-size: 200%;
 	transition: 0.4s ease-out;
-  margin-bottom: 0.5rem;
+  margin-right: 0.5rem;
 }
 
 #prev_button:hover {
