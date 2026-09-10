@@ -20,3 +20,5 @@ document.getElementById('prev_button').addEventListener('click', function() {
 document.getElementById('live_button').addEventListener('click', function() {
     sendToActiveTab('executeLiveLinkCode');
 });
+
+LanguageAccordion.init('language-accordion');
