@@ -36,7 +36,18 @@
         'English (South Africa)'
     ];
 
-    var TOP6_LANGUAGES = LANGUAGE_ORDER.slice(0, 6);
+    var PRESETS = [
+        {
+            key: 'top6',
+            label: 'Select top 6',
+            languages: LANGUAGE_ORDER.slice(0, 6)
+        },
+        {
+            key: 'dach',
+            label: 'DACH',
+            languages: ['German (Germany)', 'German (Austria)', 'French (Switzerland)', 'German (Switzerland)']
+        }
+    ];
 
     function orderedLanguageNames() {
         var known = LANGUAGE_ORDER.filter(function (name) {
@@ -105,15 +116,20 @@
         elements.selectAllCheckbox.indeterminate = selectedCount > 0 && selectedCount < total;
     }
 
-    function updateTop6State() {
-        var known = TOP6_LANGUAGES.filter(function (name) {
+    function updatePresetState(preset) {
+        var known = preset.languages.filter(function (name) {
             return Object.prototype.hasOwnProperty.call(languages, name);
         });
         var selectedCount = known.filter(function (name) {
             return selected.has(name);
         }).length;
-        elements.selectTop6Checkbox.checked = known.length > 0 && selectedCount === known.length;
-        elements.selectTop6Checkbox.indeterminate = selectedCount > 0 && selectedCount < known.length;
+        var checkbox = elements.presetCheckboxes[preset.key];
+        checkbox.checked = known.length > 0 && selectedCount === known.length;
+        checkbox.indeterminate = selectedCount > 0 && selectedCount < known.length;
+    }
+
+    function updateAllPresetStates() {
+        PRESETS.forEach(updatePresetState);
     }
 
     function onItemChange(e) {
@@ -124,7 +140,7 @@
             selected.delete(name);
         }
         updateSelectAllState();
-        updateTop6State();
+        updateAllPresetStates();
         updateCount();
         persist();
         syncToActiveTab();
@@ -143,15 +159,15 @@
             cb.checked = checked;
         });
         elements.selectAllCheckbox.indeterminate = false;
-        updateTop6State();
+        updateAllPresetStates();
         updateCount();
         persist();
         syncToActiveTab();
     }
 
-    function onSelectTop6Change(e) {
+    function onPresetChange(preset, e) {
         var checked = e.target.checked;
-        TOP6_LANGUAGES.forEach(function (name) {
+        preset.languages.forEach(function (name) {
             if (!Object.prototype.hasOwnProperty.call(languages, name)) {
                 return;
             }
@@ -164,8 +180,8 @@
         elements.grid.querySelectorAll('input[type="checkbox"]').forEach(function (cb) {
             cb.checked = selected.has(cb.dataset.lang);
         });
-        elements.selectTop6Checkbox.indeterminate = false;
         updateSelectAllState();
+        updateAllPresetStates();
         updateCount();
         persist();
         syncToActiveTab();
@@ -203,37 +219,37 @@
         body.className = 'accordion-body';
         body.hidden = true;
 
+        function createPresetRow(labelText, changeHandler) {
+            var row = document.createElement('label');
+            row.className = 'accordion-preset';
+
+            var checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.addEventListener('change', changeHandler);
+
+            var text = document.createElement('span');
+            text.textContent = labelText;
+
+            row.appendChild(checkbox);
+            row.appendChild(text);
+
+            return { row: row, checkbox: checkbox };
+        }
+
         var presetsRow = document.createElement('div');
         presetsRow.className = 'accordion-presets';
 
-        var selectAllRow = document.createElement('label');
-        selectAllRow.className = 'accordion-preset';
+        var selectAllPreset = createPresetRow('Select all', onSelectAllChange);
+        presetsRow.appendChild(selectAllPreset.row);
 
-        var selectAllCheckbox = document.createElement('input');
-        selectAllCheckbox.type = 'checkbox';
-        selectAllCheckbox.addEventListener('change', onSelectAllChange);
-
-        var selectAllText = document.createElement('span');
-        selectAllText.textContent = 'Select all';
-
-        selectAllRow.appendChild(selectAllCheckbox);
-        selectAllRow.appendChild(selectAllText);
-
-        var selectTop6Row = document.createElement('label');
-        selectTop6Row.className = 'accordion-preset';
-
-        var selectTop6Checkbox = document.createElement('input');
-        selectTop6Checkbox.type = 'checkbox';
-        selectTop6Checkbox.addEventListener('change', onSelectTop6Change);
-
-        var selectTop6Text = document.createElement('span');
-        selectTop6Text.textContent = 'Select top 6';
-
-        selectTop6Row.appendChild(selectTop6Checkbox);
-        selectTop6Row.appendChild(selectTop6Text);
-
-        presetsRow.appendChild(selectAllRow);
-        presetsRow.appendChild(selectTop6Row);
+        var presetCheckboxes = {};
+        PRESETS.forEach(function (preset) {
+            var presetRow = createPresetRow(preset.label, function (e) {
+                onPresetChange(preset, e);
+            });
+            presetCheckboxes[preset.key] = presetRow.checkbox;
+            presetsRow.appendChild(presetRow.row);
+        });
 
         var grid = document.createElement('div');
         grid.className = 'accordion-grid';
@@ -267,13 +283,13 @@
             body: body,
             chevron: chevron,
             count: count,
-            selectAllCheckbox: selectAllCheckbox,
-            selectTop6Checkbox: selectTop6Checkbox,
+            selectAllCheckbox: selectAllPreset.checkbox,
+            presetCheckboxes: presetCheckboxes,
             grid: grid
         };
 
         updateSelectAllState();
-        updateTop6State();
+        updateAllPresetStates();
         updateCount();
     }
 
