@@ -1,6 +1,51 @@
 (function () {
     var STORAGE_KEY = 'selectedLanguages';
 
+    var LANGUAGE_ORDER = [
+        'English',
+        'German (Germany)',
+        'Spanish (Spain)',
+        'French (France)',
+        'Italian (Italy)',
+        'Portuguese (Brazil)',
+        'German (Austria)',
+        'Danish (Denmark)',
+        'Finnish (Finland)',
+        'Norwegian (Norway)',
+        'Swedish (Sweden)',
+        'Dutch (Netherlands)',
+        'Dutch (Belgium)',
+        'French (Belgium)',
+        'French (Africa)',
+        'French (Switzerland)',
+        'German (Switzerland)',
+        'Polish (Poland)',
+        'Hungarian (Hungary)',
+        'Indonesian (Indonesia)',
+        'Japanese (Japan)',
+        'Korean (Korea)',
+        'Russian (Kazakhstan)',
+        'Spanish (Central America)',
+        'Spanish (South America)',
+        'English (United States)',
+        'English (Canada)',
+        'English (United Kingdom)',
+        'English (India)',
+        'English (Middle East)',
+        'English (Singapore)',
+        'English (South Africa)'
+    ];
+
+    function orderedLanguageNames() {
+        var known = LANGUAGE_ORDER.filter(function (name) {
+            return Object.prototype.hasOwnProperty.call(languages, name);
+        });
+        var rest = Object.keys(languages).filter(function (name) {
+            return LANGUAGE_ORDER.indexOf(name) === -1;
+        }).sort();
+        return known.concat(rest);
+    }
+
     var languages = {};
     var selected = new Set();
     var container = null;
@@ -137,7 +182,7 @@
         var grid = document.createElement('div');
         grid.className = 'accordion-grid';
 
-        Object.keys(languages).sort().forEach(function (name) {
+        orderedLanguageNames().forEach(function (name) {
             var item = document.createElement('label');
             item.className = 'accordion-item';
 
