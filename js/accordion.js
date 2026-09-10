@@ -39,13 +39,18 @@
     var PRESETS = [
         {
             key: 'top6',
-            label: 'Select top 6',
+            label: 'Top 6',
             languages: LANGUAGE_ORDER.slice(0, 6)
         },
         {
             key: 'dach',
             label: 'DACH',
             languages: ['German (Germany)', 'German (Austria)', 'French (Switzerland)', 'German (Switzerland)']
+        },
+        {
+            key: 'nordics',
+            label: 'Nordics',
+            languages: ['Danish (Denmark)', 'Finnish (Finland)', 'Norwegian (Norway)', 'Swedish (Sweden)']
         }
     ];
 
