@@ -9,6 +9,10 @@
     function loadLanguages() {
         return fetch(chrome.runtime.getURL('js/languages.json')).then(function (r) {
             return r.json();
+        }).then(function (data) {
+            // Sitecore's global "English" (value="en") has no entry in languages.json
+            // because language-map.js intentionally leaves it out of the URL locale logic.
+            return Object.assign({ 'English': 'en' }, data);
         });
     }
 
