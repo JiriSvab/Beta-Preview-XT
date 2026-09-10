@@ -19,6 +19,11 @@
             "matches": ["<all_urls>"],
             "style": ["style/main.css"],
             "js": ["js/site-mapping.js", "js/language-map.js", "js/content.js"]
+          },
+          {
+            "matches": ["<all_urls>"],
+            "all_frames": true,
+            "js": ["js/language-sync.js"]
           }
         ],
   "permissions": ["storage"],
