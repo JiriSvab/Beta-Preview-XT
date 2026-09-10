@@ -36,6 +36,8 @@
         'English (South Africa)'
     ];
 
+    var TOP6_LANGUAGES = LANGUAGE_ORDER.slice(0, 6);
+
     function orderedLanguageNames() {
         var known = LANGUAGE_ORDER.filter(function (name) {
             return Object.prototype.hasOwnProperty.call(languages, name);
@@ -103,6 +105,17 @@
         elements.selectAllCheckbox.indeterminate = selectedCount > 0 && selectedCount < total;
     }
 
+    function updateTop6State() {
+        var known = TOP6_LANGUAGES.filter(function (name) {
+            return Object.prototype.hasOwnProperty.call(languages, name);
+        });
+        var selectedCount = known.filter(function (name) {
+            return selected.has(name);
+        }).length;
+        elements.selectTop6Checkbox.checked = known.length > 0 && selectedCount === known.length;
+        elements.selectTop6Checkbox.indeterminate = selectedCount > 0 && selectedCount < known.length;
+    }
+
     function onItemChange(e) {
         var name = e.target.dataset.lang;
         if (e.target.checked) {
@@ -111,6 +124,7 @@
             selected.delete(name);
         }
         updateSelectAllState();
+        updateTop6State();
         updateCount();
         persist();
         syncToActiveTab();
@@ -129,6 +143,29 @@
             cb.checked = checked;
         });
         elements.selectAllCheckbox.indeterminate = false;
+        updateTop6State();
+        updateCount();
+        persist();
+        syncToActiveTab();
+    }
+
+    function onSelectTop6Change(e) {
+        var checked = e.target.checked;
+        TOP6_LANGUAGES.forEach(function (name) {
+            if (!Object.prototype.hasOwnProperty.call(languages, name)) {
+                return;
+            }
+            if (checked) {
+                selected.add(name);
+            } else {
+                selected.delete(name);
+            }
+        });
+        elements.grid.querySelectorAll('input[type="checkbox"]').forEach(function (cb) {
+            cb.checked = selected.has(cb.dataset.lang);
+        });
+        elements.selectTop6Checkbox.indeterminate = false;
+        updateSelectAllState();
         updateCount();
         persist();
         syncToActiveTab();
@@ -166,8 +203,11 @@
         body.className = 'accordion-body';
         body.hidden = true;
 
+        var presetsRow = document.createElement('div');
+        presetsRow.className = 'accordion-presets';
+
         var selectAllRow = document.createElement('label');
-        selectAllRow.className = 'accordion-select-all';
+        selectAllRow.className = 'accordion-preset';
 
         var selectAllCheckbox = document.createElement('input');
         selectAllCheckbox.type = 'checkbox';
@@ -178,6 +218,22 @@
 
         selectAllRow.appendChild(selectAllCheckbox);
         selectAllRow.appendChild(selectAllText);
+
+        var selectTop6Row = document.createElement('label');
+        selectTop6Row.className = 'accordion-preset';
+
+        var selectTop6Checkbox = document.createElement('input');
+        selectTop6Checkbox.type = 'checkbox';
+        selectTop6Checkbox.addEventListener('change', onSelectTop6Change);
+
+        var selectTop6Text = document.createElement('span');
+        selectTop6Text.textContent = 'Select top 6';
+
+        selectTop6Row.appendChild(selectTop6Checkbox);
+        selectTop6Row.appendChild(selectTop6Text);
+
+        presetsRow.appendChild(selectAllRow);
+        presetsRow.appendChild(selectTop6Row);
 
         var grid = document.createElement('div');
         grid.className = 'accordion-grid';
@@ -200,7 +256,7 @@
             grid.appendChild(item);
         });
 
-        body.appendChild(selectAllRow);
+        body.appendChild(presetsRow);
         body.appendChild(grid);
 
         container.appendChild(header);
@@ -212,10 +268,12 @@
             chevron: chevron,
             count: count,
             selectAllCheckbox: selectAllCheckbox,
+            selectTop6Checkbox: selectTop6Checkbox,
             grid: grid
         };
 
         updateSelectAllState();
+        updateTop6State();
         updateCount();
     }
 
