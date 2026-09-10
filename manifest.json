@@ -18,7 +18,7 @@
           {
             "matches": ["<all_urls>"],
             "style": ["style/main.css"],
-            "js": ["js/content.js"]
+            "js": ["js/site-mapping.js", "js/language-map.js", "js/content.js"]
           }
         ],
   "permissions": ["storage"],
