@@ -26,6 +26,23 @@
         chrome.storage.local.set(data);
     }
 
+    function syncToActiveTab() {
+        if (!chrome.tabs) {
+            return;
+        }
+        chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+            if (!tabs[0]) {
+                return;
+            }
+            chrome.tabs.sendMessage(tabs[0].id, {
+                action: 'syncSitecoreLanguages',
+                codes: getSelected()
+            }, function () {
+                void chrome.runtime.lastError; // no content script on this tab (non-Sitecore page) - ignore
+            });
+        });
+    }
+
     function updateCount() {
         elements.count.textContent = '(' + selected.size + ') items selected';
     }
@@ -47,6 +64,7 @@
         updateSelectAllState();
         updateCount();
         persist();
+        syncToActiveTab();
     }
 
     function onSelectAllChange(e) {
@@ -64,6 +82,7 @@
         elements.selectAllCheckbox.indeterminate = false;
         updateCount();
         persist();
+        syncToActiveTab();
     }
 
     function toggleOpen() {
@@ -170,6 +189,7 @@
             }
 
             buildDom();
+            syncToActiveTab();
         });
     }
 
