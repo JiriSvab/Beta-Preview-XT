@@ -66,7 +66,7 @@
 
     var languages = {};
     var selected = new Set();
-    var container = null;
+    var shell = null;
     var elements = {};
 
     function loadLanguages() {
@@ -111,7 +111,7 @@
     }
 
     function updateCount() {
-        elements.count.textContent = '(' + selected.size + ') items selected';
+        shell.setCount('(' + selected.size + ') items selected');
     }
 
     function updateSelectAllState() {
@@ -192,38 +192,7 @@
         syncToActiveTab();
     }
 
-    function toggleOpen() {
-        elements.body.hidden = !elements.body.hidden;
-        container.classList.toggle('open', !elements.body.hidden);
-    }
-
     function buildDom() {
-        container.innerHTML = '';
-        container.classList.add('accordion');
-
-        var header = document.createElement('div');
-        header.className = 'accordion-header';
-
-        var title = document.createElement('span');
-        title.className = 'accordion-title';
-        title.textContent = 'Languages';
-
-        var count = document.createElement('span');
-        count.className = 'accordion-count';
-
-        var chevron = document.createElement('span');
-        chevron.className = 'accordion-chevron';
-        chevron.textContent = '▾';
-
-        header.appendChild(title);
-        header.appendChild(count);
-        header.appendChild(chevron);
-        header.addEventListener('click', toggleOpen);
-
-        var body = document.createElement('div');
-        body.className = 'accordion-body';
-        body.hidden = true;
-
         function createPresetRow(labelText, changeHandler) {
             var row = document.createElement('label');
             row.className = 'accordion-preset';
@@ -277,17 +246,10 @@
             grid.appendChild(item);
         });
 
-        body.appendChild(presetsRow);
-        body.appendChild(grid);
-
-        container.appendChild(header);
-        container.appendChild(body);
+        shell.bodyEl.appendChild(presetsRow);
+        shell.bodyEl.appendChild(grid);
 
         elements = {
-            header: header,
-            body: body,
-            chevron: chevron,
-            count: count,
             selectAllCheckbox: selectAllPreset.checkbox,
             presetCheckboxes: presetCheckboxes,
             grid: grid
@@ -299,8 +261,8 @@
     }
 
     function init(containerId) {
-        container = document.getElementById(containerId);
-        if (!container) {
+        shell = AccordionShell.create({ containerId: containerId, title: 'Languages' });
+        if (!shell) {
             return;
         }
 

@@ -23,7 +23,7 @@
           {
             "matches": ["<all_urls>"],
             "all_frames": true,
-            "js": ["js/language-sync.js"]
+            "js": ["js/language-picker-sync.js"]
           }
         ],
   "permissions": ["storage"],
