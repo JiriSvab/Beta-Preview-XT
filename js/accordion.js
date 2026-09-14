@@ -244,7 +244,7 @@
         var presetsRow = document.createElement('div');
         presetsRow.className = 'accordion-presets';
 
-        var selectAllPreset = createPresetRow('Select all', onSelectAllChange);
+        var selectAllPreset = createPresetRow('Leica all', onSelectAllChange);
         presetsRow.appendChild(selectAllPreset.row);
 
         var presetCheckboxes = {};
