@@ -1,5 +1,6 @@
 (function () {
     var STORAGE_KEY = 'selectedLanguages';
+    var FAV_STORAGE_KEY = 'customFavLists';
 
     var LANGUAGE_ORDER = [
         'English',
@@ -54,6 +55,11 @@
         }
     ];
 
+    var FAV_PRESETS = [
+        { key: 'fav1', label: 'Fav 1', isFav: true },
+        { key: 'fav2', label: 'Fav 2', isFav: true }
+    ];
+
     function orderedLanguageNames() {
         var known = LANGUAGE_ORDER.filter(function (name) {
             return Object.prototype.hasOwnProperty.call(languages, name);
@@ -68,6 +74,40 @@
     var selected = new Set();
     var shell = null;
     var elements = {};
+    var codeToNames = {};
+    var favText = {};
+    var favMatched = {};
+
+    function buildCodeToNames() {
+        codeToNames = {};
+        Object.keys(languages).forEach(function (name) {
+            var code = String(languages[name]).toLowerCase();
+            if (!codeToNames[code]) {
+                codeToNames[code] = [];
+            }
+            codeToNames[code].push(name);
+        });
+    }
+
+    function parseFavText(text) {
+        var codes = (text || '').split(/[\s,]+/).map(function (s) {
+            return s.trim().toLowerCase();
+        }).filter(Boolean);
+        var names = new Set();
+        codes.forEach(function (code) {
+            (codeToNames[code] || []).forEach(function (name) {
+                names.add(name);
+            });
+        });
+        return names;
+    }
+
+    function getPresetLanguages(preset) {
+        if (preset.isFav) {
+            return Array.from(favMatched[preset.key] || []);
+        }
+        return preset.languages;
+    }
 
     function loadLanguages() {
         return fetch(chrome.runtime.getURL('js/languages.json')).then(function (r) {
@@ -90,6 +130,20 @@
     function persist() {
         var data = {};
         data[STORAGE_KEY] = Array.from(selected);
+        chrome.storage.local.set(data);
+    }
+
+    function loadFavLists() {
+        return new Promise(function (resolve) {
+            chrome.storage.local.get([FAV_STORAGE_KEY], function (result) {
+                resolve(result[FAV_STORAGE_KEY] || {});
+            });
+        });
+    }
+
+    function persistFavLists() {
+        var data = {};
+        data[FAV_STORAGE_KEY] = favText;
         chrome.storage.local.set(data);
     }
 
@@ -122,7 +176,7 @@
     }
 
     function updatePresetState(preset) {
-        var known = preset.languages.filter(function (name) {
+        var known = getPresetLanguages(preset).filter(function (name) {
             return Object.prototype.hasOwnProperty.call(languages, name);
         });
         var selectedCount = known.filter(function (name) {
@@ -134,7 +188,7 @@
     }
 
     function updateAllPresetStates() {
-        PRESETS.forEach(updatePresetState);
+        PRESETS.concat(FAV_PRESETS).forEach(updatePresetState);
     }
 
     function onItemChange(e) {
@@ -172,7 +226,7 @@
 
     function onPresetChange(preset, e) {
         var checked = e.target.checked;
-        preset.languages.forEach(function (name) {
+        getPresetLanguages(preset).forEach(function (name) {
             if (!Object.prototype.hasOwnProperty.call(languages, name)) {
                 return;
             }
@@ -190,6 +244,38 @@
         updateCount();
         persist();
         syncToActiveTab();
+    }
+
+    function onFavTextInput(fav, e) {
+        var newText = e.target.value;
+        favText[fav.key] = newText;
+
+        var checkbox = elements.presetCheckboxes[fav.key];
+        var wasFullyChecked = checkbox.checked && !checkbox.indeterminate;
+        var oldMatched = favMatched[fav.key] || new Set();
+        var newMatched = parseFavText(newText);
+        favMatched[fav.key] = newMatched;
+
+        if (wasFullyChecked) {
+            oldMatched.forEach(function (name) {
+                if (!newMatched.has(name)) {
+                    selected.delete(name);
+                }
+            });
+            newMatched.forEach(function (name) {
+                selected.add(name);
+            });
+            elements.grid.querySelectorAll('input[type="checkbox"]').forEach(function (cb) {
+                cb.checked = selected.has(cb.dataset.lang);
+            });
+            syncToActiveTab();
+        }
+
+        updateSelectAllState();
+        updateAllPresetStates();
+        updateCount();
+        persist();
+        persistFavLists();
     }
 
     function buildDom() {
@@ -225,6 +311,32 @@
             presetsRow.appendChild(presetRow.row);
         });
 
+        var favsContainer = document.createElement('div');
+        favsContainer.className = 'accordion-favs';
+
+        FAV_PRESETS.forEach(function (fav) {
+            var favRow = document.createElement('div');
+            favRow.className = 'accordion-fav-row';
+
+            var presetRow = createPresetRow(fav.label, function (e) {
+                onPresetChange(fav, e);
+            });
+            presetCheckboxes[fav.key] = presetRow.checkbox;
+
+            var input = document.createElement('input');
+            input.type = 'text';
+            input.className = 'accordion-fav-input';
+            input.placeholder = 'de-at, fr-fr, en-gb ...';
+            input.value = favText[fav.key] || '';
+            input.addEventListener('input', function (e) {
+                onFavTextInput(fav, e);
+            });
+
+            favRow.appendChild(presetRow.row);
+            favRow.appendChild(input);
+            favsContainer.appendChild(favRow);
+        });
+
         var grid = document.createElement('div');
         grid.className = 'accordion-grid';
 
@@ -247,6 +359,7 @@
         });
 
         shell.bodyEl.appendChild(presetsRow);
+        shell.bodyEl.appendChild(favsContainer);
         shell.bodyEl.appendChild(grid);
 
         elements = {
@@ -266,9 +379,20 @@
             return;
         }
 
-        Promise.all([loadLanguages(), loadSelection()]).then(function (results) {
+        Promise.all([loadLanguages(), loadSelection(), loadFavLists()]).then(function (results) {
             languages = results[0];
             var savedSelection = results[1];
+            var savedFavLists = results[2];
+
+            buildCodeToNames();
+
+            favText = {};
+            favMatched = {};
+            FAV_PRESETS.forEach(function (fav) {
+                var text = (savedFavLists && typeof savedFavLists[fav.key] === 'string') ? savedFavLists[fav.key] : '';
+                favText[fav.key] = text;
+                favMatched[fav.key] = parseFavText(text);
+            });
 
             if (Array.isArray(savedSelection)) {
                 selected = new Set(savedSelection.filter(function (name) {
