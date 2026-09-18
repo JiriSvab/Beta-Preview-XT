@@ -1,17 +1,14 @@
 var LINK_ACTIONS = {
     createPreviewLink: {
         urlType: 'preview',
-        label: 'Preview:',
         notFoundMessage: 'I dont know preview of this'
     },
     executeStagingLinkCode: {
         urlType: 'staging',
-        label: 'Staging: ',
         notFoundMessage: 'I dont know Staging link of this'
     },
     executeLiveLinkCode: {
         urlType: 'live',
-        label: 'Live: ',
         notFoundMessage: 'I dont know Live link of this'
     }
 };
@@ -42,13 +39,6 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 
     loadLanguageMap().then(function(languageMap) {
         button_url = insertLocale(button_url, getLanguageLocale(languageMap));
-
-        function createLink() {
-            var item_ID_row = QuickInfoUtils.findRowByLabel(table, /item id/i);
-            if (!item_ID_row) return;
-            item_ID_row.insertAdjacentHTML('beforebegin', '<tr><td>' + linkAction.label + '</td><td><a href="' + button_url + '" target="_blank">' + button_url + '</a> <button type="button" onclick="navigator.clipboard.writeText(\'' + button_url + '\');this.textContent=\'Copied!\';setTimeout(()=>this.textContent=\'Copy\',1500)" style="margin-left:8px;cursor:pointer;">Copy</button></td></tr>');
-        };
-        createLink();
         sendResponse({ url: button_url });
     });
     return true;
