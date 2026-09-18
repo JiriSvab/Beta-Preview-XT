@@ -1,7 +1,7 @@
 (function () {
     var STORAGE_KEY = 'quickInfoEnhancementEnabled';
     var GUID_RE = /^\{?([0-9a-f]{8})-?([0-9a-f]{4})-?([0-9a-f]{4})-?([0-9a-f]{4})-?([0-9a-f]{12})\}?$/i;
-    var IMAGE_TEMPLATE_RE = /\/sitecore\/templates\/system\/media\/(versioned|unversioned)\/image\b/i;
+    var IMAGE_TEMPLATE_RE = /\/sitecore\/templates\/system\/media\/(versioned|unversioned)\/(image|jpeg)\b/i;
     var ROW_CLASS = 'quick-info-enhancement-row';
 
     var observer = null;
