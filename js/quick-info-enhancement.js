@@ -24,14 +24,7 @@
     }
 
     function findRowByLabel(table, labelPattern) {
-        var rows = table.querySelectorAll('tr');
-        for (var i = 0; i < rows.length; i++) {
-            var label = rows[i].querySelector('td');
-            if (label && labelPattern.test(label.textContent)) {
-                return rows[i];
-            }
-        }
-        return null;
+        return QuickInfoUtils.findRowByLabel(table, labelPattern);
     }
 
     function isImageTemplate(table) {

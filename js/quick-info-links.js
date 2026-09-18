@@ -12,14 +12,7 @@
     var scanScheduled = false;
 
     function findRowByLabel(table, labelPattern) {
-        var rows = table.querySelectorAll('tr');
-        for (var i = 0; i < rows.length; i++) {
-            var label = rows[i].querySelector('td');
-            if (label && labelPattern.test(label.textContent)) {
-                return rows[i];
-            }
-        }
-        return null;
+        return QuickInfoUtils.findRowByLabel(table, labelPattern);
     }
 
     function insertLinkRow(itemIdRow, label, url) {
@@ -50,7 +43,7 @@
         }
 
         var itemIdRow = findRowByLabel(table, /item id/i);
-        var pathRow = findRowByLabel(table, /^path/i);
+        var pathRow = QuickInfoUtils.findItemPathRow(table);
         if (!itemIdRow || !pathRow) {
             return;
         }
