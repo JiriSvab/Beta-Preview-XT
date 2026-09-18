@@ -25,8 +25,31 @@
         return null;
     }
 
+    function detectLinkFormat() {
+        var path = decodeURIComponent(window.location.pathname);
+        if (/content editor\.aspx/i.test(path)) {
+            return 'editor';
+        }
+        if (/content manager\/default\.aspx/i.test(path)) {
+            return 'manager';
+        }
+        return null;
+    }
+
+    function buildLink(guid, format) {
+        if (format === 'manager') {
+            return '-/media/' + guid + '.ashx';
+        }
+        return '~/link.aspx?_id=' + guid + '&_z=z';
+    }
+
     function enhanceTable(table) {
         if (table.dataset.quickInfoEnhanced === 'true') {
+            return;
+        }
+
+        var format = detectLinkFormat();
+        if (!format) {
             return;
         }
 
@@ -41,7 +64,7 @@
             return;
         }
 
-        var link = '~/link.aspx?_id=' + guid + '&_z=z';
+        var link = buildLink(guid, format);
 
         itemIdRow.insertAdjacentHTML('afterend',
             '<tr class="' + ROW_CLASS + '"><td>Internal link:</td><td>' + link +
