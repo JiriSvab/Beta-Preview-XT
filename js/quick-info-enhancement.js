@@ -1,6 +1,7 @@
 (function () {
     var STORAGE_KEY = 'quickInfoEnhancementEnabled';
     var GUID_RE = /^\{?([0-9a-f]{8})-?([0-9a-f]{4})-?([0-9a-f]{4})-?([0-9a-f]{4})-?([0-9a-f]{12})\}?$/i;
+    var IMAGE_TEMPLATE_RE = /\/sitecore\/templates\/system\/media\/(versioned|unversioned)\/image\b/i;
     var ROW_CLASS = 'quick-info-enhancement-row';
 
     var observer = null;
@@ -14,15 +15,45 @@
         return (match[1] + match[2] + match[3] + match[4] + match[5]).toUpperCase();
     }
 
-    function findItemIdRow(table) {
+    function escapeHtml(str) {
+        return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;');
+    }
+
+    function findRowByLabel(table, labelPattern) {
         var rows = table.querySelectorAll('tr');
         for (var i = 0; i < rows.length; i++) {
             var label = rows[i].querySelector('td');
-            if (label && /item id/i.test(label.textContent)) {
+            if (label && labelPattern.test(label.textContent)) {
                 return rows[i];
             }
         }
         return null;
+    }
+
+    function isImageTemplate(table) {
+        var templateRow = findRowByLabel(table, /^template/i);
+        var link = templateRow && templateRow.querySelector('a');
+        return !!link && IMAGE_TEMPLATE_RE.test(link.textContent);
+    }
+
+    function insertRow(afterRow, label, value) {
+        afterRow.insertAdjacentHTML('afterend',
+            '<tr class="' + ROW_CLASS + '"><td>' + label + '</td><td>' + escapeHtml(value) +
+            ' <button type="button" class="quick-info-copy-btn">Copy</button></td></tr>');
+
+        var newRow = afterRow.nextElementSibling;
+        newRow.querySelector('.quick-info-copy-btn').addEventListener('click', function (e) {
+            var btn = e.currentTarget;
+            navigator.clipboard.writeText(value);
+            btn.textContent = 'Copied!';
+            setTimeout(function () { btn.textContent = 'Copy'; }, 1500);
+        });
+
+        return newRow;
     }
 
     function detectLinkFormat() {
@@ -53,7 +84,7 @@
             return;
         }
 
-        var itemIdRow = findItemIdRow(table);
+        var itemIdRow = findRowByLabel(table, /item id/i);
         if (!itemIdRow) {
             return;
         }
@@ -65,17 +96,12 @@
         }
 
         var link = buildLink(guid, format);
+        var lastRow = insertRow(itemIdRow, 'Internal link:', link);
 
-        itemIdRow.insertAdjacentHTML('afterend',
-            '<tr class="' + ROW_CLASS + '"><td>Internal link:</td><td>' + link +
-            ' <button type="button" class="quick-info-copy-btn">Copy</button></td></tr>');
-
-        itemIdRow.nextElementSibling.querySelector('.quick-info-copy-btn').addEventListener('click', function (e) {
-            var btn = e.currentTarget;
-            navigator.clipboard.writeText(link);
-            btn.textContent = 'Copied!';
-            setTimeout(function () { btn.textContent = 'Copy'; }, 1500);
-        });
+        if (format === 'manager' && isImageTemplate(table)) {
+            var imgCode = '<img src="' + link + '" class="img-responsive" />';
+            insertRow(lastRow, 'Responsive img:', imgCode);
+        }
 
         table.dataset.quickInfoEnhanced = 'true';
     }
