@@ -109,8 +109,3 @@
 .accordion-preset input {
     flex-shrink: 0;
 }
-
-.accordion-placeholder {
-    color: rgba(255, 255, 255, 0.5);
-    font-style: italic;
-}

@@ -18,7 +18,7 @@
           {
             "matches": ["<all_urls>"],
             "style": ["style/main.css"],
-            "js": ["js/site-mapping.js", "js/language-map.js", "js/content.js"]
+            "js": ["js/site-mapping.js", "js/language-map.js", "js/content.js", "js/quick-info-enhancement.js"]
           },
           {
             "matches": ["<all_urls>"],
