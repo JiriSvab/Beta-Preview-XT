@@ -22,3 +22,4 @@ document.getElementById('live_button').addEventListener('click', function() {
 });
 
 LanguageAccordion.init('language-accordion');
+QuickInfoAccordion.init('quick-info-accordion');
