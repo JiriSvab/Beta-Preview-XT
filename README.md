@@ -2,7 +2,7 @@
 Chrome addon for generating beta preview link for Sitecore production CMS.
 
 Final result will be:
-![previev-live-link](https://github.com/user-attachments/assets/ba03bc3b-5190-4b2d-be13-49d150e228b6)
+![previev-live-link](img/thumbnail-app.png)
 
 In order to install this Chrom addon, follow these steps:
 1. download source files from this repository and unzip them
