@@ -7,7 +7,7 @@ Final result will be:
 In order to install this Chrom addon, follow these steps:
 1. download source files from this repository and unzip them
 2. open Google Chrome browser
-3. go to "settings"
+3. go to "settings" (or just directly move to chrome://extensions and skip step 4)
 4. click on "Extensions"
 5. in top right corner enable "Developer mode"
 6. in top left corner you will see three buttons, select "Load unpacked"
